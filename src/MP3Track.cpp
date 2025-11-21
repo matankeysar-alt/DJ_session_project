@@ -10,6 +10,11 @@ MP3Track::MP3Track(const std::string& title, const std::vector<std::string>& art
     std::cout << "MP3Track created: " << bitrate << " kbps" << std::endl;
 }
 
+MP3Track::MP3Track(const MP3Track& other) // copy constructor is essential for the implimintation of the clone function
+    : AudioTrack(other) 
+    , bitrate(other.bitrate)
+    , has_id3_tags(other.has_id3_tags){}
+
 // ========== TODO: STUDENTS IMPLEMENT THESE VIRTUAL FUNCTIONS ==========
 
 void MP3Track::load() {

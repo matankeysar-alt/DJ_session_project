@@ -150,7 +150,7 @@ void demonstrate_polymorphism() {
         std::cout << "Quality: " << track->get_quality_score() << std::endl;  // Virtual function call
 
         // Test cloning
-        auto cloned = track->clone();
+        PointerWrapper<AudioTrack> cloned = track->clone();
         if (cloned) {
             std::cout << "Cloned: " << cloned->get_title() << std::endl;
         }
