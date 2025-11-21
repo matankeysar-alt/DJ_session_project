@@ -49,6 +49,7 @@ double WAVTrack::get_quality_score() const {
 }
 
 PointerWrapper<AudioTrack> WAVTrack::clone() const {
-    return PointerWrapper<AudioTrack>(new WAVTrack(*this)); 
+    WAVTrack* new_track = new WAVTrack(*this);
+    return PointerWrapper<AudioTrack>(new_track); 
     //the copy constructor takes care of deep copying 
 }
