@@ -1,0 +1,152 @@
+#include "MixingEngineService.h"
+#include <iostream>
+#include <memory>
+
+
+/**
+ * TODO: Implement MixingEngineService constructor
+ */
+MixingEngineService::MixingEngineService()
+    : active_deck(0), auto_sync(false), bpm_tolerance(0)
+{
+    decks[0] = nullptr;
+    decks[1] = nullptr;
+
+    std::cout << "[MixingEngineService] Initialized with 2 empty decks." << std::endl;
+}
+
+/**
+ * TODO: Implement MixingEngineService destructor
+ */
+MixingEngineService::~MixingEngineService() {
+    std::cout << "[MixingEngineService] Cleaning up decks...." << std::endl;
+    for (size_t i = 0; i < 2; i++) {
+        if (decks[i]) {
+            delete decks[i];
+            decks[i] = nullptr;
+        }
+
+        auto_sync = false;
+        bpm_tolerance = 0;
+        active_deck = 0;
+    }
+}
+
+
+/**
+ * TODO: Implement loadTrackToDeck method
+ * @param track: Reference to the track to be loaded
+ * @return: Index of the deck where track was loaded, or -1 on failure
+ */
+int MixingEngineService::loadTrackToDeck(const AudioTrack& track) {
+    
+    std::cout << "\n=== Loading Track to Deck ===" << std::endl;
+
+    PointerWrapper<AudioTrack> clone = track.clone();
+
+    if (!clone) {
+        std::cout << "[ERROR] Track: " << track.get_title() << " failed to clone" << std::endl;
+        return -1;
+    }
+
+    size_t deckToLoad;
+    if (decks[0] == nullptr && decks[1] == nullptr) {
+            deckToLoad = 0;
+    }
+
+    if (active_deck = 1) {
+        deckToLoad = 0;
+    }
+
+    if (active_deck = 0) {
+        deckToLoad = 1;
+    }
+
+     std::cout << "[Deck Switch] Target deck: " << deckToLoad << std::endl;
+
+     if (decks[deckToLoad]) {
+        delete decks[deckToLoad];
+        decks[deckToLoad] = nullptr;
+     }
+
+     
+    clone.get() -> load();
+    clone.get() -> analyze_beatgrid();
+
+    if (decks[active_deck] && auto_sync) {
+        if (!can_mix_tracks) {
+            sync_bpm(clone);
+        } 
+    }
+
+     decks[deckToLoad] = clone.release();
+     std::cout << "[Load Complete] ’" << decks[deckToLoad] -> get_title() << "’ is now loaded on deck <target>" << std::endl;
+
+    if (decks[active_deck]) {
+        delete decks[active_deck];
+        decks[active_deck] = nullptr;
+        std::cout << "[Unload] Unloading previous deck " 
+         << active_deck << (decks[active_deck] -> get_title())
+         << std::endl;
+    }
+     
+    active_deck = deckToLoad;
+    std::cout << "[Active Deck] Switched to deck " << active_deck << std::endl;
+
+    return deckToLoad; // Placeholder
+}
+
+/**
+ * @brief Display current deck status
+ */
+void MixingEngineService::displayDeckStatus() const {
+    std::cout << "\n=== Deck Status ===\n";
+    for (size_t i = 0; i < 2; ++i) {
+        if (decks[i])
+            std::cout << "Deck " << i << ": " << decks[i]->get_title() << "\n";
+        else
+            std::cout << "Deck " << i << ": [EMPTY]\n";
+    }
+    std::cout << "Active Deck: " << active_deck << "\n";
+    std::cout << "===================\n";
+}
+
+/**
+ * TODO: Implement can_mix_tracks method
+ * 
+ * Check if two tracks can be mixed based on BPM difference.
+ * 
+ * @param track: Track to check for mixing compatibility
+ * @return: true if BPM difference <= tolerance, false otherwise
+ */
+bool MixingEngineService::can_mix_tracks(const PointerWrapper<AudioTrack>& track) const {
+
+    if (!decks[active_deck] || !track.get()) {return false;}
+
+    // get both active_deck and track BPM
+    int active_bpm = decks[active_deck] -> get_bpm();
+    int track_bpm = track -> get_bpm();
+
+    // calculate the difference 
+    int difference = abs(active_bpm - track_bpm);
+
+    if (difference <= bpm_tolerance) {
+        return true;
+    }
+
+    return false;
+}
+
+/**
+ * TODO: Implement sync_bpm method
+ * @param track: Track to synchronize with active deck
+ */
+void MixingEngineService::sync_bpm(const PointerWrapper<AudioTrack>& track) const {
+    if (decks[active_deck] && track.get()) {
+        int track_bpm = track -> get_bpm();
+        int active_bpm = decks[active_deck] -> get_bpm();
+        int average = (track_bpm + active_bpm) / 2;
+        track.get() -> set_bpm(average);
+        std::cout << "[Sync BPM] Syncing BPM from " << track_bpm << " to " << average << std::endl;
+    }
+}

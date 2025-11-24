@@ -1,0 +1,137 @@
+#include "AudioTrack.h"
+#include <iostream>
+#include <cstring>
+#include <random>
+
+AudioTrack::AudioTrack(const std::string& title, const std::vector<std::string>& artists, 
+                      int duration, int bpm, size_t waveform_samples)
+    : title(title), artists(artists), duration_seconds(duration), bpm(bpm), 
+      waveform_size(waveform_samples) {
+
+    // Allocate memory for waveform analysis
+    waveform_data = new double[waveform_size];
+
+    // Generate some dummy waveform data for testing
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<double> dis(-1.0, 1.0);
+
+    for (size_t i = 0; i < waveform_size; ++i) {
+        waveform_data[i] = dis(gen);
+    }
+    #ifdef DEBUG
+    std::cout << "AudioTrack created: " << title << " by " << std::endl;
+    for (const auto& artist : artists) {
+        std::cout << artist << " ";
+    }
+    std::cout << std::endl;
+    #endif
+}
+
+// ========== TODO: STUDENTS IMPLEMENT RULE OF 5 ========== //matan
+
+AudioTrack::~AudioTrack() {
+    #ifdef DEBUG
+    std::cout << "AudioTrack destructor called for: " << title << std::endl;
+    #endif
+
+    delete[] waveform_data;
+}
+
+AudioTrack::AudioTrack(const AudioTrack& other) {
+    #ifdef DEBUG
+    std::cout << "AudioTrack copy constructor called for: " << other.title << std::endl;
+    #endif
+    this -> duration_seconds = other.duration_seconds;
+    this -> bpm = other.bpm;
+    this -> artists = other.artists;
+    this -> title = other.title;
+    this -> waveform_size = other.waveform_size;
+    this -> waveform_data = nullptr;
+    
+    if (other.waveform_data) {
+        this -> waveform_data = new double[other.waveform_size];
+        for (size_t i = 0; i < other.waveform_size; i++) {
+            this -> waveform_data[i] = other.waveform_data[i];
+        }
+    }
+}
+
+AudioTrack& AudioTrack::operator=(const AudioTrack& other) {
+    #ifdef DEBUG
+    std::cout << "AudioTrack copy assignment called for: " << other.title << std::endl;
+    #endif
+
+    if (this != &other) {
+
+        delete[] waveform_data;
+
+        this -> duration_seconds = other.duration_seconds;
+        this -> bpm = other.bpm;
+        this -> artists = other.artists;
+        this -> title = other.title; 
+        this -> waveform_size = other.waveform_size;
+    
+        if (other.waveform_data) {
+            this -> waveform_data = new double[other.waveform_size];
+            for (size_t i = 0; i < other.waveform_size; i++) {
+                this -> waveform_data[i] = other.waveform_data[i];
+            }
+        }
+
+        else {
+            this -> waveform_data = nullptr;
+        }
+    }
+    
+    return *this;
+}
+
+AudioTrack::AudioTrack(AudioTrack&& other) noexcept {
+    #ifdef DEBUG
+    std::cout << "AudioTrack move constructor called for: " << other.title << std::endl;
+    #endif
+    this -> duration_seconds = other.duration_seconds;
+    this -> bpm = other.bpm;
+    this -> artists = std::move(other.artists);
+    this -> title = std::move(other.title); 
+    this -> waveform_size = other.waveform_size;
+
+    this -> waveform_data = other.waveform_data;
+
+    other.duration_seconds = 0;
+    other.bpm = 0;
+    other.waveform_size = 0;
+    other.waveform_data = nullptr;
+}
+
+AudioTrack& AudioTrack::operator=(AudioTrack&& other) noexcept {
+    #ifdef DEBUG
+    std::cout << "AudioTrack move assignment called for: " << other.title << std::endl;
+    #endif
+    if (this != &other) {
+
+        delete[] waveform_data;
+
+        this -> duration_seconds = other.duration_seconds;
+        this -> bpm = other.bpm;
+        this -> artists = std::move(other.artists);
+        this -> title = std::move(other.title); 
+        this -> waveform_size = other.waveform_size;
+        
+        this -> waveform_data = other.waveform_data;
+
+        other.duration_seconds = 0;
+        other.bpm = 0;
+        other.waveform_size = 0;
+        other.waveform_data = nullptr;  
+    }
+    
+    return *this;
+}
+
+void AudioTrack::get_waveform_copy(double* buffer, size_t buffer_size) const {
+    if (buffer && waveform_data && buffer_size <= waveform_size) {
+        std::memcpy(buffer, waveform_data, buffer_size * sizeof(double));
+    }
+}
