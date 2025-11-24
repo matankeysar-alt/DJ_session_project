@@ -22,6 +22,10 @@ Playlist::~Playlist() {
     }
 }
 
+PlaylistNode::~PlaylistNode() { // implimentation of the node distructor (declared on playlist.h)
+    delete track;
+}
+
 void Playlist::add_track(AudioTrack* track) {
     if (!track) {
         std::cout << "[Error] Cannot add null track to playlist" << std::endl;

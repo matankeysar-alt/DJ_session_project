@@ -29,6 +29,8 @@ public:
      */
     void loadPlaylistFromIndices(const std::string& playlist_name, const std::vector<int>& track_indices);
 
+    ~DJLibraryService(); //distructor
+
     // Returns a reference to the loaded playlist
     Playlist& getPlaylist();
 

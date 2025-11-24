@@ -63,8 +63,32 @@ bool DJSession::load_playlist(const std::string& playlist_name)  {
 
  */
 int DJSession::load_track_to_controller(const std::string& track_name) {
-    // Your implementation here
-    return 0; // Placeholder
+
+    AudioTrack* track = library_service.findTrack(track_name);
+
+    if (!track) {
+        std::cout << "[ERROR] Track: " << track_name << " not found in library" << std::endl;
+        this -> stats.errors++;
+        return 0;
+    }
+
+    std::cout << "[System] Loading track ’" << track_name << "’ to controller..." << std::endl;
+    int ans = controller_service.loadTrackToCache(*track);
+
+    if (ans ==1) {
+        stats.cache_hits++;
+    }
+
+    else if (ans == 0) {
+        stats.cache_misses++;
+    }
+
+    else {
+        stats.cache_evictions++;
+        stats.cache_misses++;
+    }
+
+    return ans; 
 }
 
 /**
@@ -75,8 +99,35 @@ int DJSession::load_track_to_controller(const std::string& track_name) {
  */
 bool DJSession::load_track_to_mixer_deck(const std::string& track_title) {
     std::cout << "[System] Delegating track transfer to MixingEngineService for: " << track_title << std::endl;
-    // your implementation here
-    return false; // Placeholder
+    
+    AudioTrack* track = controller_service.getTrackFromCache(track_title);
+
+    if (!track) {
+        std::cout << "[ERROR] Track: "<< track_title << " not found in cache" << std::endl;
+        this -> stats.errors++;
+        return false;
+    }
+
+    int load = mixing_service.loadTrackToDeck(*track);
+
+    if (load == 0) {
+        stats.deck_loads_a++;
+        stats.transitions++;
+    }
+
+    else if (load == 1) {
+        stats.deck_loads_b++;
+        stats.transitions++;
+    }
+
+    else {
+        std::cout << "ERROR" << std::endl;
+         stats.errors++;
+         return false;
+    }
+
+
+    return true; 
 }
 
 /**
@@ -108,7 +159,7 @@ void DJSession::simulate_dj_performance() {
     std::cout << "\n--- Processing Tracks ---" << std::endl;
 
     std::cout << "TODO: Implement the DJ performance simulation workflow here." << std::endl;
-    // Your implementation here
+    
 }
 
 
