@@ -126,7 +126,6 @@ bool DJSession::load_track_to_mixer_deck(const std::string& track_title) {
          return false;
     }
 
-
     return true; 
 }
 
