@@ -74,7 +74,7 @@ int MixingEngineService::loadTrackToDeck(const AudioTrack& track) {
     clone.get() -> analyze_beatgrid();
 
     if (decks[active_deck] && auto_sync) {
-        if (!can_mix_tracks) {
+        if (!can_mix_tracks(clone)) {
             sync_bpm(clone);
         } 
     }
@@ -93,7 +93,7 @@ int MixingEngineService::loadTrackToDeck(const AudioTrack& track) {
     active_deck = deckToLoad;
     std::cout << "[Active Deck] Switched to deck " << active_deck << std::endl;
 
-    return deckToLoad; // Placeholder
+    return deckToLoad; 
 }
 
 /**

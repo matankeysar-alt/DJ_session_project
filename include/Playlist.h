@@ -20,7 +20,7 @@ struct PlaylistNode {
     PlaylistNode* next;
 
     PlaylistNode(AudioTrack* t) : track(t), next(nullptr) {}
-    ~PlaylistNode() {}
+    ~PlaylistNode();
 };    
 
 class Playlist {
@@ -85,6 +85,9 @@ public:
      * Get all tracks as a vector
      */
     std::vector<AudioTrack*> getTracks() const;
+
+    bool operator<(const Playlist& other) const; // for the sorting in "simulate_dj_performance"
+
 
 };
 

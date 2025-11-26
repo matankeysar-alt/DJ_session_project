@@ -142,3 +142,9 @@ std::vector<AudioTrack*> Playlist::getTracks() const {
     }
     return tracks;
 }
+
+// This tells std::sort how to compare two Playlist objects
+bool Playlist::operator<(const Playlist& other) const {
+    // Compares based on the alphabetical order of the playlist_name string
+    return this->playlist_name < other.playlist_name; 
+}

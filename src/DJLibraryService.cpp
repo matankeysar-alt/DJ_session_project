@@ -18,7 +18,7 @@ void DJLibraryService::buildLibrary(const std::vector<SessionConfig::TrackInfo>&
         AudioTrack* new_track = nullptr;
         const std::string& format = track_data.type; 
 
-        if (format == "MP3") {
+        if (format == "MP3") { // create the track from the data in config
             new_track = new MP3Track(
                 track_data.title, 
                 track_data.artists, 
@@ -27,7 +27,7 @@ void DJLibraryService::buildLibrary(const std::vector<SessionConfig::TrackInfo>&
                 track_data.extra_param1,  
                 track_data.extra_param2  
             );
-        } else if (format == "WAV") {
+        } else if (format == "WAV") { // create the track from the data in config
             new_track = new WAVTrack(
                 track_data.title, 
                 track_data.artists, 
@@ -38,18 +38,17 @@ void DJLibraryService::buildLibrary(const std::vector<SessionConfig::TrackInfo>&
             );
         }
 
-        if (new_track) {
-            library.push_back(new_track);
-        
-            if (format == "MP3") {
-                std::cout << track_data.extra_param1 << "kpbs" << std::endl;
-            }
-
-            if (format == "WAV") {
-                std::cout << "WAVTrack created: " << track_data.extra_param1
-                << "Hz/" << track_data.extra_param2 << "bit" << std::endl;
-            }
+        library.push_back(new_track); // insert the track
+    
+        if (format == "MP3") {
+            std::cout << track_data.extra_param1 << "kpbs" << std::endl;
         }
+
+        if (format == "WAV") {
+            std::cout << "WAVTrack created: " << track_data.extra_param1
+            << "Hz/" << track_data.extra_param2 << "bit" << std::endl;
+        }
+        
         
     }
 

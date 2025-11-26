@@ -108,7 +108,7 @@ public:
     T* operator->() const {
         if (ptr) {return ptr;}
         else {
-            return null;
+            return nullptr;
         }
     }
 
@@ -121,7 +121,7 @@ public:
     T* get() const {
         if (ptr) {return ptr;}
         else {
-            return null;
+            return nullptr;
         }
     }
 
