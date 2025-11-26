@@ -23,7 +23,11 @@ Playlist::~Playlist() {
 }
 
 PlaylistNode::~PlaylistNode() { // implimentation of the node distructor (declared on playlist.h)
-    delete track;
+    if (track) {
+        delete track;
+        track = nullptr;
+    }
+   
 }
 
 void Playlist::add_track(AudioTrack* track) {
