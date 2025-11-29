@@ -19,6 +19,14 @@ public:
     MixingEngineService();
     ~MixingEngineService();
 
+
+    // Rule of 5: Deleting copy/move operations because raw pointers (decks) imply resource ownership, preventing Shallow Copy and Double Free errors.
+    MixingEngineService(const MixingEngineService&) = delete;
+    MixingEngineService& operator=(const MixingEngineService&) = delete;
+    MixingEngineService(MixingEngineService&&) = delete;
+    MixingEngineService& operator=(MixingEngineService&&) = delete;
+    
+
     /** Contract: Load a track to the next deck per instant-transition policy
      * - @param track: reference to a cached track to be cloned for the mixer
      * - @return: index of the deck the track was loaded to (0 or 1), or -1 on failure.

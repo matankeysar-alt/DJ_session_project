@@ -22,12 +22,111 @@ Playlist::~Playlist() {
     }
 }
 
-PlaylistNode::~PlaylistNode() { // implimentation of the node distructor (declared on playlist.h)
+// rule of 5: implimentation
+
+PlaylistNode::~PlaylistNode() { 
     if (track) {
         delete track;
         track = nullptr;
     }
    
+}
+
+Playlist::Playlist(const Playlist& other) 
+    : head(nullptr), playlist_name(other.playlist_name), track_count(0) {
+
+    if (!other.head) { // playlist is empty
+        return;
+    }
+
+    PlaylistNode* current_other = other.head;
+    PlaylistNode* last_new = nullptr;
+
+    while (current_other) { // loop for copying every node
+        AudioTrack* new_track_clone = current_other->track->clone().release(); // clone the track in the node 
+        PlaylistNode* new_node = new PlaylistNode(new_track_clone); // make a new node using the cloned track
+
+        if (last_new == nullptr) { // insert the first node of the new list
+            head = new_node;
+        }
+        
+        else {
+            last_new->next = new_node; // insert the next node (untill Playlist is fully copied)
+        }
+        
+        last_new = new_node;
+        current_other = current_other->next;
+        track_count++;
+    }
+}
+
+Playlist& Playlist::operator=(const Playlist& other) {
+    if (this == &other) {
+        return *this;
+    }
+    
+    //distruction of all nodes
+    PlaylistNode* current = head;
+    while (current) {
+        PlaylistNode* next = current->next;
+        delete current; 
+        current = next;
+    }
+
+    head = nullptr;
+    track_count = 0;
+
+    playlist_name = other.playlist_name;
+    
+    if (!other.head) {
+        return *this;
+    }
+
+    // deep copying
+    PlaylistNode* current_other = other.head;
+    PlaylistNode* last_new = nullptr;
+
+    while (current_other) {
+        AudioTrack* new_track_clone = current_other->track->clone().release(); 
+        PlaylistNode* new_node = new PlaylistNode(new_track_clone); 
+
+        if (last_new == nullptr) {
+            head = new_node;  
+        } 
+        
+        else {
+            last_new->next = new_node;  
+        }
+        
+        last_new = new_node;
+        current_other = current_other->next;
+        track_count++;
+    }
+
+    return *this;
+}
+
+Playlist::Playlist(Playlist&& other) noexcept
+    : head(other.head), 
+      playlist_name(std::move(other.playlist_name)),
+      track_count(other.track_count) {
+    other.head = nullptr;
+    other.track_count = 0;
+}
+
+Playlist& Playlist::operator=(Playlist&& other) noexcept {
+    if (this != &other) {
+        this->~Playlist(); 
+
+        head = other.head;
+        playlist_name = std::move(other.playlist_name);
+        track_count = other.track_count;
+
+        other.head = nullptr;
+        other.track_count = 0;
+    }
+
+    return *this;
 }
 
 void Playlist::add_track(AudioTrack* track) {

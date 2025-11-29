@@ -54,11 +54,11 @@ int MixingEngineService::loadTrackToDeck(const AudioTrack& track) {
             deckToLoad = 0;
     }
 
-    if (active_deck = 1) {
+    if (active_deck == 1) {
         deckToLoad = 0;
     }
 
-    if (active_deck = 0) {
+    if (active_deck == 0) {
         deckToLoad = 1;
     }
 

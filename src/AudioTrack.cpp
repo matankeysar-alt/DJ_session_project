@@ -38,21 +38,22 @@ AudioTrack::~AudioTrack() {
     delete[] waveform_data;
 }
 
-AudioTrack::AudioTrack(const AudioTrack& other) {
+AudioTrack::AudioTrack(const AudioTrack& other)
+    : title(other.title),
+      artists(other.artists),
+      duration_seconds(other.duration_seconds),
+      bpm(other.bpm),
+      waveform_size(other.waveform_size),
+      waveform_data(nullptr) {
     #ifdef DEBUG
     std::cout << "AudioTrack copy constructor called for: " << other.title << std::endl;
     #endif
-    this -> duration_seconds = other.duration_seconds;
-    this -> bpm = other.bpm;
-    this -> artists = other.artists;
-    this -> title = other.title;
-    this -> waveform_size = other.waveform_size;
-    this -> waveform_data = nullptr;
     
     if (other.waveform_data) {
-        this -> waveform_data = new double[other.waveform_size];
-        for (size_t i = 0; i < other.waveform_size; i++) {
-            this -> waveform_data[i] = other.waveform_data[i];
+        this->waveform_data = new double[this->waveform_size];
+        
+        for (size_t i = 0; i < this->waveform_size; i++) {
+            this->waveform_data[i] = other.waveform_data[i];
         }
     }
 }
@@ -87,18 +88,17 @@ AudioTrack& AudioTrack::operator=(const AudioTrack& other) {
     return *this;
 }
 
-AudioTrack::AudioTrack(AudioTrack&& other) noexcept {
+AudioTrack::AudioTrack(AudioTrack&& other) noexcept
+    : duration_seconds(other.duration_seconds),
+      bpm(other.bpm),
+      artists(std::move(other.artists)), 
+      title(std::move(other.title)),     
+      waveform_size(other.waveform_size),
+      waveform_data(other.waveform_data) {
     #ifdef DEBUG
-    std::cout << "AudioTrack move constructor called for: " << other.title << std::endl;
+    std::cout << "AudioTrack move constructor called for: " << title << std::endl;
     #endif
-    this -> duration_seconds = other.duration_seconds;
-    this -> bpm = other.bpm;
-    this -> artists = std::move(other.artists);
-    this -> title = std::move(other.title); 
-    this -> waveform_size = other.waveform_size;
-
-    this -> waveform_data = other.waveform_data;
-
+    
     other.duration_seconds = 0;
     other.bpm = 0;
     other.waveform_size = 0;

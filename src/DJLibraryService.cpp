@@ -55,7 +55,7 @@ void DJLibraryService::buildLibrary(const std::vector<SessionConfig::TrackInfo>&
     std::cout << "[INFO] Track library built: " << library.size() << " tracks loaded" << std::endl;
 }
 
-DJLibraryService::~DJLibraryService() {
+DJLibraryService::~DJLibraryService() { // all tracks must be deleted, as well as the vector itself
     
     for (AudioTrack* track : library) {
         delete track;
@@ -99,15 +99,7 @@ Playlist& DJLibraryService::getPlaylist() {
  * HINT: Leverage Playlist's find_track method
  */
 AudioTrack* DJLibraryService::findTrack(const std::string& track_title) {
-    for (AudioTrack* track : library) {
-        if (track) {
-            if (track -> get_title() == track_title) {
-                return track;
-            }
-        }
-    }
-
-    return nullptr; // if the track with the name "trac_title" was not found
+    return(playlist.find_track(track_title)); // using the "find_track" function of Playlist
 }
 
 void DJLibraryService::loadPlaylistFromIndices(const std::string& playlist_name, 
@@ -121,19 +113,17 @@ void DJLibraryService::loadPlaylistFromIndices(const std::string& playlist_name,
             AudioTrack* track = library[index - 1];
             PointerWrapper<AudioTrack> clone = track -> clone();
 
-            if (clone) {
-                clone -> load(); 
-                clone -> analyze_beatgrid(); 
-                playlist.add_track(clone.release());
-
-                std::cout << "Added '" << track -> get_title()
-                 << "' to playlist '" << playlist_name << "'" << std::endl;
+            if (!clone) {
+                std::cout << "[ERROR]:"  << playlist_name << " failed to clone" << std::endl;
             }
 
-            else {
-                std::cout << "[ERROR] Track: \"" << track -> get_title()
-                 << "\" failed to clone" << std::endl;
-            }
+            clone.get() -> load(); 
+            clone.get() -> analyze_beatgrid(); 
+            playlist.add_track(clone.get());
+            
+
+            std::cout << "Added '" << track -> get_title()
+                << "' to playlist '" << playlist_name << "'" << std::endl; 
         }
 
         else {

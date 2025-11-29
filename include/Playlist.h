@@ -21,6 +21,12 @@ struct PlaylistNode {
 
     PlaylistNode(AudioTrack* t) : track(t), next(nullptr) {}
     ~PlaylistNode();
+
+    // Rule of 5: Deleting copy/move operations because this Node owns the AudioTrack* resource, preventing Shallow Copy of the inner pointer and Double Free errors.
+    PlaylistNode(const PlaylistNode&) = delete;
+    PlaylistNode& operator=(const PlaylistNode&) = delete;
+    PlaylistNode(PlaylistNode&&) = delete;
+    PlaylistNode& operator=(PlaylistNode&&) = delete;
 };    
 
 class Playlist {
@@ -39,6 +45,13 @@ public:
      * Destructor
      */
     ~Playlist();
+
+    
+    // rule of 5: declaretion
+    Playlist(const Playlist& other);
+    Playlist& operator=(const Playlist& other);
+    Playlist(Playlist&& other) noexcept;
+    Playlist& operator=(Playlist&& other) noexcept;
 
     /**
      * Add a track to the playlist
