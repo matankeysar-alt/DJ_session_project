@@ -104,29 +104,32 @@ AudioTrack* DJLibraryService::findTrack(const std::string& track_title) {
 
 void DJLibraryService::loadPlaylistFromIndices(const std::string& playlist_name, 
                                                const std::vector<int>& track_indices) {
-                                                
     std::cout << "[INFO] Loading playlist: " << playlist_name << std::endl;
 
-    this -> playlist = Playlist(playlist_name);
+    this->playlist = Playlist(playlist_name);
+    
     for (int index : track_indices) {
         if (index > 0 && (size_t) index <= library.size()) {
             AudioTrack* track = library[index - 1];
-            PointerWrapper<AudioTrack> clone = track -> clone();
+            
+            // 1. Create the wrapper (Owns the new track)
+            PointerWrapper<AudioTrack> clone = track->clone();
 
             if (!clone) {
                 std::cout << "[ERROR]:"  << playlist_name << " failed to clone" << std::endl;
+                continue;
             }
 
-            clone.get() -> load(); 
-            clone.get() -> analyze_beatgrid(); 
-            playlist.add_track(clone.get());
+            clone.get()->load(); 
+            clone.get()->analyze_beatgrid(); 
             
-
-            std::cout << "Added '" << track -> get_title()
+            std::cout << "DEBUG: Transferring ownership for " << track->get_title() << std::endl;
+        
+            playlist.add_track(clone.release()); 
+            
+            std::cout << "Added '" << track->get_title()
                 << "' to playlist '" << playlist_name << "'" << std::endl; 
-        }
-
-        else {
+        } else {
             std::cout << "[WARNING] Invalid track index: " << index << std::endl;
         }
     }

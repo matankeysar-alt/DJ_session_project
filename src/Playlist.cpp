@@ -116,7 +116,12 @@ Playlist::Playlist(Playlist&& other) noexcept
 
 Playlist& Playlist::operator=(Playlist&& other) noexcept {
     if (this != &other) {
-        this->~Playlist(); 
+        PlaylistNode* curr = head;
+        while (curr) {
+            PlaylistNode* next = curr->next;
+            delete curr;
+            curr = next;
+        }
 
         head = other.head;
         playlist_name = std::move(other.playlist_name);

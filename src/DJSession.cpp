@@ -168,62 +168,66 @@ void DJSession::simulate_dj_performance() {
 
     std::cout << "TODO: Implement the DJ performance simulation workflow here." << std::endl;
     
-    std::vector<Playlist> playlists;
+    std::vector<std::string> playlist_names; // Correct type
+
     for (const auto& pair : session_config.playlists) {
-        playlists.push_back(pair.first);
+        // CHANGE THIS: playlists.push_back(pair.first);
+        playlist_names.push_back(pair.first); 
     }
-    std::sort(playlists.begin(), playlists.end());
+    std::sort(playlist_names.begin(), playlist_names.end());
 
     if (play_all) {
-        for(size_t i = 0; i < playlists.size(); i++) {
-            playlistIteration(playlists[i]);
+        for(size_t i = 0; i < playlist_names.size(); i++) {
+            // Pass the string name, not a Playlist object
+            process_playlist(playlist_names[i]); 
         }
-        std::cout << "All playlists played" <<std::endl;
+        std::cout << "All playlists played" << std::endl;
     }
     else {
+        // Interactive mode logic
         std::string name = display_playlist_menu_from_config();
         while(name != "") {
-            Playlist Playlist;
-            for(size_t i = 0; i < playlists.size(); i++) {
-                if(playlists[i].get_name() == name) { //searching for the playlist with the name "name"
-                    Playlist = playlists[i];
-                    break;
-                }
-            }
+            // No need to search the vector manually, you already have the name!
+            process_playlist(name); 
 
             name = display_playlist_menu_from_config();
         }
-        std::cout << "Session cancelled by user" <<std::endl;
+        stats.tracks_processed = 0;
+        stats.cache_hits = 0;
+        stats.cache_misses = 0;
+        stats.cache_evictions = 0;
+        stats.deck_loads_a = 0;
+        stats.deck_loads_b = 0;
+        stats.transitions = 0;
+        stats.errors = 0;
+        std::cout << "Session cancelled by user or all playlists played." << std::endl;
     }
 }
 
-// 
-void DJSession::playlistIteration(Playlist playlist) {
-    if(!load_playlist(playlist.get_name())) {
-        std::cerr << "[ERROR] Playlist is invalid." << std::endl;
-        stats.errors++;
-        return;
+
+void DJSession::process_playlist(const std::string& playlist_name) {
+    
+    // 1. Load the playlist into the Library Service
+    if(!load_playlist(playlist_name)) {
+        // load_playlist handles the error printing
+        return; 
     }
-    std::vector<AudioTrack*> tracks = playlist.getTracks();
-    for (AudioTrack* track : tracks) {
-        std::cout << "Processing: " << track->get_title() << std::endl;
+
+    for (const std::string& track_name : track_titles) {
+        
+        std::cout << "\n-- Processing: " << track_name << std::endl;
         stats.tracks_processed++;
-        load_track_to_controller(track->get_title()); //the statistics are updated within the function
-        load_track_to_mixer_deck(track->get_title()); //if the load fails or not, we continue to the next track
+
+        load_track_to_controller(track_name); 
+        controller_service.displayCacheStatus();
+
+        load_track_to_mixer_deck(track_name);
+        mixing_service.displayDeckStatus();
     }
     
     print_session_summary();
-
-    // reset all statistics
-    stats.tracks_processed = 0;
-    stats.cache_hits = 0;
-    stats.cache_misses = 0;
-    stats.cache_evictions = 0;
-    stats.deck_loads_a = 0;
-    stats.deck_loads_b = 0;
-    stats.transitions = 0;
-    stats.errors = 0;
 }
+
 
 
 /* 

@@ -121,5 +121,5 @@ private:
      */
     void print_session_summary() const;
 
-    void playlistIteration(Playlist playlist);
+    void process_playlist(const std::string& name);
 };

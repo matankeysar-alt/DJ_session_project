@@ -29,9 +29,9 @@ int DJControllerService::loadTrackToCache(AudioTrack& track) {
     ptr -> analyze_beatgrid();
 
     PointerWrapper<AudioTrack> wrapper(ptr); // wrapping the track after the changes
-    bool avicted = cache.put(std::move(wrapper));
-    if (avicted) {return -1;} // with aviction
-    return 0; // without aviction
+    bool evicted = cache.put(std::move(wrapper));
+    if (evicted) {return -1;} // with eviction
+    return 0; // without eviction
 }
 
 void DJControllerService::set_cache_size(size_t new_size) {
