@@ -66,6 +66,9 @@ int MixingEngineService::loadTrackToDeck(const AudioTrack& track) {
             sync_bpm(clone);
         } 
     }
+    else if (auto_sync && !decks[active_deck]) {
+        std::cout << "[Sync BPM] Cannot sync - one of the decks is empty." << std::endl;
+    }
 
     decks[deckToLoad] = clone.release();
     std::cout << "[Load Complete] '" << decks[deckToLoad] -> get_title() << "' is now loaded on deck " << deckToLoad << std::endl;

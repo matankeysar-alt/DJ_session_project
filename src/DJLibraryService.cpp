@@ -122,14 +122,10 @@ void DJLibraryService::loadPlaylistFromIndices(const std::string& playlist_name,
 
             clone.get()->load(); 
             clone.get()->analyze_beatgrid(); 
-            
-            std::cout << "DEBUG: Transferring ownership for " << track->get_title() << std::endl;
-        
-            playlist.add_track(clone.release()); 
-            
-            std::cout << "Added '" << track->get_title()
-                << "' to playlist '" << playlist_name << "'" << std::endl; 
-        } else {
+                    
+            playlist.add_track(clone.release());  
+        } 
+        else {
             std::cout << "[WARNING] Invalid track index: " << index << std::endl;
         }
     }

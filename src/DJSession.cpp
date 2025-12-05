@@ -165,13 +165,10 @@ void DJSession::simulate_dj_performance() {
     std::cout << "Auto Sync: " << (session_config.auto_sync ? "enabled" : "disabled") << std::endl;
     std::cout << "Cache Capacity: " << session_config.controller_cache_size << " slots (LRU policy)" << std::endl;
     std::cout << "\n--- Processing Tracks ---" << std::endl;
-
-    std::cout << "TODO: Implement the DJ performance simulation workflow here." << std::endl;
     
     std::vector<std::string> playlist_names; // Correct type
 
     for (const auto& pair : session_config.playlists) {
-        // CHANGE THIS: playlists.push_back(pair.first);
         playlist_names.push_back(pair.first); 
     }
     std::sort(playlist_names.begin(), playlist_names.end());
@@ -184,10 +181,8 @@ void DJSession::simulate_dj_performance() {
         std::cout << "All playlists played" << std::endl;
     }
     else {
-        // Interactive mode logic
         std::string name = display_playlist_menu_from_config();
         while(name != "") {
-            // No need to search the vector manually, you already have the name!
             process_playlist(name); 
 
             name = display_playlist_menu_from_config();
