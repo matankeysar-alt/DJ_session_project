@@ -19,7 +19,7 @@ MixingEngineService::MixingEngineService()
  * TODO: Implement MixingEngineService destructor
  */
 MixingEngineService::~MixingEngineService() {
-    std::cout << "[MixingEngineService] Cleaning up decks...." << std::endl;
+    std::cout << "[MixingEngineService] Cleaning up decks..." << std::endl;
     for (size_t i = 0; i < 2; i++) {
         if (decks[i]) {
             delete decks[i];

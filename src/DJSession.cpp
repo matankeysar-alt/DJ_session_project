@@ -81,7 +81,7 @@ int DJSession::load_track_to_controller(const std::string& track_name) {
         return 0;
     }
 
-    std::cout << "[System] Loading track ’" << track_name << "’ to controller..." << std::endl;
+    std::cout << "[System] Loading track '" << track_name << "' to controller..." << std::endl;
     int ans = controller_service.loadTrackToCache(*track);
 
     if (ans ==1) {
@@ -166,7 +166,7 @@ void DJSession::simulate_dj_performance() {
     std::cout << "Cache Capacity: " << session_config.controller_cache_size << " slots (LRU policy)" << std::endl;
     std::cout << "\n--- Processing Tracks ---" << std::endl;
     
-    std::vector<std::string> playlist_names; // Correct type
+    std::vector<std::string> playlist_names; 
 
     for (const auto& pair : session_config.playlists) {
         playlist_names.push_back(pair.first); 
@@ -175,10 +175,8 @@ void DJSession::simulate_dj_performance() {
 
     if (play_all) {
         for(size_t i = 0; i < playlist_names.size(); i++) {
-            // Pass the string name, not a Playlist object
             process_playlist(playlist_names[i]); 
         }
-        std::cout << "All playlists played" << std::endl;
     }
     else {
         std::string name = display_playlist_menu_from_config();
@@ -187,30 +185,29 @@ void DJSession::simulate_dj_performance() {
 
             name = display_playlist_menu_from_config();
         }
-        stats.tracks_processed = 0;
-        stats.cache_hits = 0;
-        stats.cache_misses = 0;
-        stats.cache_evictions = 0;
-        stats.deck_loads_a = 0;
-        stats.deck_loads_b = 0;
-        stats.transitions = 0;
-        stats.errors = 0;
-        std::cout << "Session cancelled by user or all playlists played." << std::endl;
     }
+    stats.tracks_processed = 0;
+    stats.cache_hits = 0;
+    stats.cache_misses = 0;
+    stats.cache_evictions = 0;
+    stats.deck_loads_a = 0;
+    stats.deck_loads_b = 0;
+    stats.transitions = 0;
+    stats.errors = 0;
+    std::cout << "Session cancelled by user or all playlists played." << std::endl;
 }
 
 
 void DJSession::process_playlist(const std::string& playlist_name) {
     
-    // 1. Load the playlist into the Library Service
     if(!load_playlist(playlist_name)) {
-        // load_playlist handles the error printing
         return; 
     }
 
+    std::reverse(track_titles.begin(), track_titles.end());
     for (const std::string& track_name : track_titles) {
         
-        std::cout << "\n-- Processing: " << track_name << std::endl;
+        std::cout << "\n--- Processing: " << track_name << " ---" << std::endl;
         stats.tracks_processed++;
 
         load_track_to_controller(track_name); 

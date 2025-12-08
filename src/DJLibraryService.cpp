@@ -40,14 +40,14 @@ void DJLibraryService::buildLibrary(const std::vector<SessionConfig::TrackInfo>&
 
         library.push_back(new_track); // insert the track
     
-        if (format == "MP3") {
-            std::cout << track_data.extra_param1 << "kpbs" << std::endl;
-        }
+//        if (format == "MP3") {
+//            std::cout << track_data.extra_param1 << "kpbs" << std::endl;
+//        }
 
-        if (format == "WAV") {
-            std::cout << "WAVTrack created: " << track_data.extra_param1
-            << "Hz/" << track_data.extra_param2 << "bit" << std::endl;
-        }
+//        if (format == "WAV") {
+//           std::cout << "WAVTrack created: " << track_data.extra_param1
+//            << "Hz/" << track_data.extra_param2 << "bit" << std::endl;
+//        }
         
         
     }
